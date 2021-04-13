@@ -48,17 +48,17 @@ open class StudentBattleshipGrid protected constructor(
     /**
      * A matrix with all guesses made in the game
      */
-    private val guesses: MutableMatrix<GuessCell> = TODO("Initialise with a mutable matrix that has the values taken from the guesses constructor parameter")
+    private val guesses: MutableMatrix<GuessCell> = MutableMatrix(guesses) //T_ODO("Initialise with a mutable matrix that has the values taken from the guesses constructor parameter")
 
     /**
      * Helper property to get the width of the game.
      */
-    override val columns: Int get() = TODO("Get the width of the grid from another property such as opponent or guesses")
+    override val columns: Int get() = BattleshipGrid.DEFAULT_COLUMNS //T_ODO("Get the width of the grid from another property such as opponent or guesses")
 
     /**
      * Helper property to get the height of the game.
      */
-    override val rows: Int get() = TODO("Get the height of the grid from another property such as opponent or guesses")
+    override val rows: Int get() = BattleshipGrid.DEFAULT_ROWS //T_ODO("Get the height of the grid from another property such as opponent or guesses")
 
     /*
      * Infrastructure to allow listening to game change events (and update the display

@@ -12,11 +12,10 @@ class StudentBattleshipTest : BattleshipTest() {
         rows: Int,
         ships: List<Ship>
     ): StudentBattleshipOpponent {
-        val studentShips = ships.map { ship ->
-            TODO("create an instance of StudentShip that maps the given ship data")
+        val studentShips = ships.map { ship -> StudentShip(top = ship.top, left = ship.left, bottom = ship.bottom, right = ship.right )
+            //T_ODO("create an instance of StudentShip that maps the given ship data")
         }
-
-        return TODO("Create an instance of StudentBattleshipOpponent with the dimensions and ships")
+        return StudentBattleshipOpponent(rows, columns, studentShips) //T_ODO("Create an instance of StudentBattleshipOpponent with the dimensions and ships")
     }
 
     override fun createOpponent(
@@ -26,8 +25,8 @@ class StudentBattleshipTest : BattleshipTest() {
         random: Random
     ): StudentBattleshipOpponent {
         // Note that the passing of random allows for repeatable testing
-        return TODO("Create an instance of StudentBattleshipOpponent for the given game size, " +
-                "target ship sizes and random generator")
+        //return T_ODO("Create an instance of StudentBattleshipOpponent for the given game size, " + "target ship sizes and random generator")
+        return StudentBattleshipOpponent(rows, columns, shipSizes, random)
     }
 
     override fun createGrid(

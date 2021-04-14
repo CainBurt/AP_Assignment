@@ -21,7 +21,7 @@ open class StudentBattleshipOpponent(//T_ODO("Determine the rows for the grid in
     constructor(rows: Int, columns: Int, shipSizes: IntArray, random: Random) : this(rows, columns, randomGame(rows, columns, shipSizes, random))
 
     init{
-        //TODO ships are valid and do not overlap
+        //checks ships are valid and do not overlap
         val validShips = mutableListOf<StudentShip>()
         for(ship in ships){
             if(ship.right >= columns || ship.bottom >= rows){

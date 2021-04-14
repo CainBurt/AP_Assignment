@@ -51,17 +51,17 @@ open class StudentBattleshipGrid protected constructor(
     /**
      * A matrix with all guesses made in the game
      */
-    private val guesses: MutableMatrix<GuessCell> = MutableMatrix(guesses) //T_ODO("Initialise with a mutable matrix that has the values taken from the guesses constructor parameter")
+    private val guesses: MutableMatrix<GuessCell> = MutableMatrix(guesses)
 
     /**
      * Helper property to get the width of the game.
      */
-    override val columns: Int get() = opponent.columns //T_ODO("Get the width of the grid from another property such as opponent or guesses")
+    override val columns: Int get() = opponent.columns
 
     /**
      * Helper property to get the height of the game.
      */
-    override val rows: Int get() = opponent.rows //T_ODO("Get the height of the grid from another property such as opponent or guesses")
+    override val rows: Int get() = opponent.rows
 
     /*
      * Infrastructure to allow listening to game change events (and update the display
@@ -108,17 +108,17 @@ open class StudentBattleshipGrid protected constructor(
      * This method is core to the game as it implements the actual gameplay (after initial setup).
      */
     override fun shootAt(column: Int, row: Int): GuessResult {
-        //TODO("Check that the coordinates are in range")
+        //Check that the coordinates are in range
         if(column < 0 || column >= columns ||
                 row < 0 || row >= rows){
             throw IllegalArgumentException("coordinates are not in range")
         }
-        //TODO("Check that the coordinate has not been tried already for this game")
+        //Check that the coordinate has not been tried already for this game
         if(guesses[column, row] != GuessCell.UNSET){
             throw IllegalStateException("coordinate already guessed")
         }
 
-
+        //Update the grid state, remembering that if a ship is sunk, all its cells should be sunk")
         val shipInfo = opponent.shipAt(column, row)
         val guessResult = when (shipInfo) {
 
@@ -150,9 +150,8 @@ open class StudentBattleshipGrid protected constructor(
 
             }
         }
-        //TODO("Update the grid state, remembering that if a ship is sunk, all its cells should be sunk")
-        //TODO("Return the result of the action as a child of GuessResult")
         fireOnGridChangeEvent(column, row)
+        //Return the result of the action as a child of GuessResult
         return guessResult
     }
 

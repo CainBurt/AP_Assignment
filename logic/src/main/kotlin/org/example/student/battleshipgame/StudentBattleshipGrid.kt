@@ -4,6 +4,7 @@ import uk.ac.bournemouth.ap.battleshiplib.BattleshipGrid
 import uk.ac.bournemouth.ap.battleshiplib.BattleshipGrid.BattleshipGridListener
 import uk.ac.bournemouth.ap.battleshiplib.GuessCell
 import uk.ac.bournemouth.ap.battleshiplib.GuessResult
+import uk.ac.bournemouth.ap.battleshiplib.forEachIndex
 import uk.ac.bournemouth.ap.lib.matrix.Matrix
 import uk.ac.bournemouth.ap.lib.matrix.MutableMatrix
 
@@ -17,18 +18,18 @@ import uk.ac.bournemouth.ap.lib.matrix.MutableMatrix
  * @param opponent The actual opponent information.
  */
 open class StudentBattleshipGrid protected constructor(
-    guesses: Matrix<GuessCell>,
-    override val opponent: StudentBattleshipOpponent,
+        guesses: Matrix<GuessCell>,
+        override val opponent: StudentBattleshipOpponent,
 ) : BattleshipGrid {
 
     /**
      * Helper constructor for a fresh new game
      */
     constructor(opponent: StudentBattleshipOpponent) : this(
-        MutableMatrix(
-            opponent.columns,
-            opponent.rows
-        ) { _, _ -> GuessCell.UNSET }, opponent
+            MutableMatrix(
+                    opponent.columns,
+                    opponent.rows
+            ) { _, _ -> GuessCell.UNSET }, opponent
     )
 
     /**
@@ -53,12 +54,12 @@ open class StudentBattleshipGrid protected constructor(
     /**
      * Helper property to get the width of the game.
      */
-    override val columns: Int get() = BattleshipGrid.DEFAULT_COLUMNS //T_ODO("Get the width of the grid from another property such as opponent or guesses")
+    override val columns: Int get() = opponent.columns //T_ODO("Get the width of the grid from another property such as opponent or guesses")
 
     /**
      * Helper property to get the height of the game.
      */
-    override val rows: Int get() = BattleshipGrid.DEFAULT_ROWS //T_ODO("Get the height of the grid from another property such as opponent or guesses")
+    override val rows: Int get() = opponent.rows //T_ODO("Get the height of the grid from another property such as opponent or guesses")
 
     /*
      * Infrastructure to allow listening to game change events (and update the display
@@ -99,17 +100,50 @@ open class StudentBattleshipGrid protected constructor(
      * The get operator allows retrieving the guesses at a location. You probably want to just look
      * the value up from a property you create (of type `MutableMatrix<GuessCell>`)
      */
-    override operator fun get(column: Int, row: Int): GuessCell = TODO("Look up the value from state")
+    override operator fun get(column: Int, row: Int): GuessCell = guesses[column, row]
 
     /**
      * This method is core to the game as it implements the actual gameplay (after initial setup).
      */
     override fun shootAt(column: Int, row: Int): GuessResult {
-        TODO("Check that the coordinates are in range")
-        TODO("Check that the coordinate has not been tried already for this game")
-        TODO("Determine from the opponent which ship (or none) is at the location, the index matches the index in opponent.ships")
-        TODO("Update the grid state, remembering that if a ship is sunk, all its cells should be sunk")
-        TODO("Return the result of the action as a child of GuessResult")
+        //TODO("Check that the coordinates are in range")
+        //TODO("Check that the coordinate has not been tried already for this game")
+
+        val shipInfo = opponent.shipAt(column, row)
+        val guessResult = when (shipInfo) {
+
+            null -> {
+                guesses[column, row] = GuessCell.MISS
+                GuessResult.MISS
+            }
+
+            else -> {
+                guesses[column, row] = GuessCell.HIT(shipInfo.index)
+
+                var isSunk = true
+                shipInfo.ship.forEachIndex{column, row ->
+                    if(guesses[column, row] !is GuessCell.HIT){
+                        isSunk = false
+                    }
+                }
+
+                if(isSunk){
+                    shipInfo.ship.forEachIndex{column, row ->
+                        guesses[column, row] = GuessCell.SUNK(shipInfo.index)
+                    }
+                    shipsSunk[shipInfo.index] = true
+                    GuessResult.SUNK(shipInfo.index)
+                }else{
+                    GuessResult.HIT(shipInfo.index)
+                }
+
+
+            }
+        }
+        //TODO("Update the grid state, remembering that if a ship is sunk, all its cells should be sunk")
+        //TODO("Return the result of the action as a child of GuessResult")
+        fireOnGridChangeEvent(column, row)
+        return guessResult
     }
 
 }

@@ -2,6 +2,7 @@ package org.example.student.battleshipgame
 
 import uk.ac.bournemouth.ap.battleshiplib.BattleshipOpponent
 import uk.ac.bournemouth.ap.battleshiplib.BattleshipOpponent.ShipInfo
+import java.lang.IllegalArgumentException
 import kotlin.random.Random
 /**
  * Suggested starting point for implementing an opponent class. Please note that your constructor
@@ -15,10 +16,40 @@ open class StudentBattleshipOpponent(//T_ODO("Determine the rows for the grid in
         override val rows: Int, //T_ODO("Determine the columns for the grid in which the ships are hidden")
         override val columns: Int, ships:List<StudentShip>) : BattleshipOpponent { //rows: Int, columns: Int, shipSize: IntArray, random: Random
 
-    override val ships:List<StudentShip> = ships //T_ODO("Record the ships that are placed for this opponent")
+    override val ships:List<StudentShip> //T_ODO("Record the ships that are placed for this opponent")
 
     constructor(rows: Int, columns: Int, shipSizes: IntArray, random: Random) : this(rows, columns, randomGame(rows, columns, shipSizes, random))
 
+    init{
+        //TODO ships are valid and do not overlap
+        val validShips = mutableListOf<StudentShip>()
+        for(ship in ships){
+            if(ship.right >= columns || ship.bottom >= rows){
+                throw IllegalArgumentException("Ship out of bounds")
+            }
+            if(validShips.any{ it.overlaps(ship) }){
+                throw IllegalArgumentException("Ship overlaps")
+            }
+            validShips.add(ship)
+        }
+
+        this.ships = validShips
+
+    }
+
+    /**
+     * Determine whether there is a ship at the given coordinate. If so, provide the shipInfo (index+ship)
+     * otherwise `null`.
+     */
+    override fun shipAt(column: Int, row: Int): ShipInfo<StudentShip>? {
+        for(index in ships.indices){
+            val ship = ships[index]
+            if(ship.isCoordinateInShip(column, row)){
+                return ShipInfo(index, ship)
+            }
+        }
+        return null
+    }
 
     companion object{
 
@@ -53,20 +84,6 @@ open class StudentBattleshipOpponent(//T_ODO("Determine the rows for the grid in
             return shipList
         }
 
-    }
-
-    /**
-     * Determine whether there is a ship at the given coordinate. If so, provide the shipInfo (index+ship)
-     * otherwise `null`.
-     */
-    override fun shipAt(column: Int, row: Int): ShipInfo<StudentShip>? {
-        for(index in ships.indices){
-            val ship = ships[index]
-            if(ship.isCoordinateInShip(column, row)){
-                return ShipInfo(index, ship)
-            }
-        }
-        return null
     }
 }
 

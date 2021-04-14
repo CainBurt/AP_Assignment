@@ -7,6 +7,8 @@ import uk.ac.bournemouth.ap.battleshiplib.GuessResult
 import uk.ac.bournemouth.ap.battleshiplib.forEachIndex
 import uk.ac.bournemouth.ap.lib.matrix.Matrix
 import uk.ac.bournemouth.ap.lib.matrix.MutableMatrix
+import java.lang.IllegalArgumentException
+import java.lang.IllegalStateException
 
 /**
  * This grid class describes the state of current guesses. It records which ships were sunk, where
@@ -107,7 +109,15 @@ open class StudentBattleshipGrid protected constructor(
      */
     override fun shootAt(column: Int, row: Int): GuessResult {
         //TODO("Check that the coordinates are in range")
+        if(column < 0 || column >= columns ||
+                row < 0 || row >= rows){
+            throw IllegalArgumentException("coordinates are not in range")
+        }
         //TODO("Check that the coordinate has not been tried already for this game")
+        if(guesses[column, row] != GuessCell.UNSET){
+            throw IllegalStateException("coordinate already guessed")
+        }
+
 
         val shipInfo = opponent.shipAt(column, row)
         val guessResult = when (shipInfo) {

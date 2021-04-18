@@ -8,4 +8,17 @@
         <item name="colorAccent">@color/design_default_color_secondary</item>
     </style>
 
+    <style name="Widget.Theme.Battleships.GridView" parent="">
+        <item name="gridBackgroundColor">#BE00D4D4</item>
+        <item name="gridLineColor">#000000</item>
+        <item name="gridLineWidth">2dp</item>
+    </style>
+
+    <style name="Widget.Theme.Battleships.GridViewBase" parent="Widget.Theme.Battleships.GridView">
+        <item name="android:background">@color/gray_400</item>
+        <item name="exampleColor">@color/light_blue_400</item>
+
+
+    </style>
+
 </resources>

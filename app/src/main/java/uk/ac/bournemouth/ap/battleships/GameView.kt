@@ -14,57 +14,54 @@ class GameView: View {
 
     private val colCount = 10
     private val rowCount = 10
+    private var cellWidth = 0
+    private var offsetLeft = 0
+    private var offsetTop = 0
 
-    private var squareWidth: Float = 0f
-    private var squareSpacing: Float = 0f
-    private var squareSpacingRatio: Float = 0.1f
 
-    private val gridPaint: Paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+    //paints
+    private val gridBackgroundPaint: Paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         style = Paint.Style.FILL
-        color = Color.BLUE
+        color = Color.CYAN
     }
-    private val noPlayerPaint: Paint= Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        style = Paint.Style.FILL
-        color = Color.WHITE
+    private val gridLinePaint: Paint= Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        style = Paint.Style.STROKE
+        color = Color.BLACK
     }
 
+    val gridHeight get() = rowCount * cellWidth
+    val gridWidth get() = colCount * cellWidth
+
+    //ajusts for screen size
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
-        super.onSizeChanged(w, h, oldw, oldh)
+        val availableWidth = w - paddingLeft - paddingRight
+        val availableHeight = h - paddingTop - paddingBottom
+        cellWidth = minOf(availableWidth/ colCount, availableHeight/rowCount)
+        offsetLeft = (availableWidth - (colCount * cellWidth))/2
+        offsetTop = (availableHeight - gridHeight)/2
 
-        val diameterX = w/(colCount + (colCount+1)*squareSpacingRatio)
-        val diameterY = h/(rowCount + (rowCount+1)*squareSpacingRatio)
-
-        squareWidth = minOf(diameterX, diameterY)
-        squareSpacing = squareWidth*squareSpacingRatio
     }
 
     override fun onDraw(canvas: Canvas) {
-        super.onDraw(canvas)
-        val gameWidth: Float = colCount * (squareWidth+squareSpacing) + squareSpacing
-        val gameHeight: Float = rowCount * (squareWidth+squareSpacing) + squareSpacing
+        val gridTop = (paddingTop + offsetTop).toFloat()
+        val gridLeft = (paddingLeft + offsetLeft).toFloat()
+        val gridBottom = (paddingTop + offsetTop + gridHeight).toFloat()
+        val gridRight = (paddingLeft + offsetLeft + gridWidth).toFloat()
+
 
         //draw the game board
-        canvas.drawRect(0f, 0f, gameWidth, gameHeight, gridPaint)
+        canvas.drawRect(gridLeft, gridTop, gridRight, gridBottom, gridBackgroundPaint)
 
-        //val radius = circleDiameter / 2f
-        for (col in 0 until colCount) {
-            for (row in 0 until rowCount) {
-                // We will later on want to use the game data to determine this
-                val paint = noPlayerPaint
-                // Drawing squares uses the width and spacing
-                val cx = squareSpacing + ((squareWidth + squareSpacing) * col)
-                val cy = squareSpacing + ((squareWidth + squareSpacing) * row)
+        //draw vertical lines
+        for(col in 0..colCount){
+            val lineX = gridLeft+(col*cellWidth).toFloat()
+            canvas.drawLine(lineX, gridTop, lineX, gridBottom, gridLinePaint)
+        }
 
-                //canvas.drawCircle(cx, cy, radius, paint)
-                canvas.drawRect((cy), (cx), (cy + colCount*10) , (cx + rowCount*10) , paint)
-                //canvas.drawRect(row.toFloat(), col.toFloat(), rowCount.toFloat(), colCount.toFloat() ,paint)
-                //canvas.drawLine((cy), (cx), (cy + colCount) , (cx + rowCount) , paint)
-
-//                /**Vertical Line**/
-//                canvas.drawLine(col.toFloat(), 0f, col.toFloat(), canvas.height.toFloat(), paint)
-//                /**Horizontal Line**/
-//                canvas.drawLine(0f, row.toFloat(), canvas.width.toFloat(), row.toFloat(), paint)
-            }
+        //draw horizontal lines
+        for(row in 0..rowCount){
+            val lineY = gridTop+(row*cellWidth).toFloat()
+            canvas.drawLine(gridLeft, lineY, gridRight, lineY, gridLinePaint)
         }
 
 

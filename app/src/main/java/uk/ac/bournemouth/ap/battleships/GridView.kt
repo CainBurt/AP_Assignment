@@ -117,7 +117,6 @@ class GridView : GridViewBase {
     override fun onDraw(canvas: Canvas) {
         drawGrid(canvas)
 
-
         // TODO: consider storing these as member variables to reduce
         // allocations per draw cycle.
         val paddingLeft = paddingLeft
@@ -142,6 +141,7 @@ class GridView : GridViewBase {
                     paddingLeft + contentWidth, paddingTop + contentHeight)
             it.draw(canvas)
         }
+
     }
 
 

@@ -32,9 +32,9 @@ abstract class GridViewBase : View {
     abstract val colCount: Int
     abstract val rowCount: Int
 
-    private var cellWidth = 0f
-    private var offsetLeft = 0f
-    private var offsetTop = 0f
+    var cellWidth = 0f
+    var offsetLeft = 0f
+    var offsetTop = 0f
 
 
     //paints

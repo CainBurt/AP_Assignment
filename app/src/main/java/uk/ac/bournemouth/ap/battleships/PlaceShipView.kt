@@ -4,30 +4,31 @@ import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
-import android.graphics.drawable.Drawable
-import android.text.TextPaint
 import android.util.AttributeSet
 import android.util.Log
 import android.view.GestureDetector
 import android.view.MotionEvent
-import android.view.View
-import androidx.core.content.withStyledAttributes
 import androidx.core.view.GestureDetectorCompat
 import org.example.student.battleshipgame.StudentShip
+import uk.ac.bournemouth.ap.battleshiplib.BattleshipGrid
 
 /**
  * TODO: document your custom view class.
  */
 class PlaceShipView : GridViewBase {
 
-    override val colCount: Int get() = 10
-    override val rowCount: Int get() = 10
+    override val colCount: Int get() = BattleshipGrid.DEFAULT_COLUMNS
+    override val rowCount: Int get() = BattleshipGrid.DEFAULT_ROWS
 
     var row = 0f
     var column = 0f
+    var isVertical = true
+    lateinit var newPlayerShip : StudentShip
+    //gets the ship sizes
+    val shipSizes: IntArray = BattleshipGrid.DEFAULT_SHIP_SIZES
+    var counter = 0
 
-    private val _shipList = mutableListOf<StudentShip>()
-    private val shipList : List<StudentShip> get() = _shipList
+
 
     constructor(context: Context) : super(context) {
         init(null, 0)
@@ -42,6 +43,12 @@ class PlaceShipView : GridViewBase {
     }
 
     private fun init(attrs: AttributeSet?, defStyle: Int) {
+//        for(shipSize in shipSizes){
+//            var newShip : StudentShip
+//            do{
+//                if(colCount < shipSize)
+//            }while(shipList.any{it.overlaps(newShip)})
+//        }
 
     }
 
@@ -66,7 +73,7 @@ class PlaceShipView : GridViewBase {
         val gridTop = offsetTop+paddingTop
         val shipMargins = cellWidth*0.1f
 
-        for(ship in shipList){
+        for(ship in playerShipList){
             val shipLeft = ship.left *cellWidth + gridLeft + shipMargins
             val shipTop = ship.top * cellWidth + gridTop + shipMargins
             val shipRight = (ship.right+1) * cellWidth + gridLeft - shipMargins
@@ -89,30 +96,51 @@ class PlaceShipView : GridViewBase {
             return true
         }
 
+
         override fun onSingleTapConfirmed(ev: MotionEvent): Boolean {
+
+            //check ships dont overlap
             row = ev.x / 100
             column = ev.y / 100
-            val newShip = StudentShip(column.toInt(), row.toInt(), column.toInt()+3, row.toInt())
-            _shipList.add(newShip)
+            isVertical = true
+            newPlayerShip = StudentShip(column.toInt(), row.toInt(), column.toInt()+ shipSizes[counter] -1, row.toInt())
+
+            //checks ships dont overlap eachother and are within the grid size
+            if(!playerShipList.any{it.overlaps(newPlayerShip)} && newPlayerShip.bottom < colCount){
+                counter += 1
+                _playerShipList.add(newPlayerShip)
+            }
+
             Log.d(LOGTAG, "ST row=$row , column=$column")
             return true
         }
 
         override fun onDoubleTap(ev: MotionEvent): Boolean {
+
+
             row = ev.x / 100
             column = ev.y / 100
-            val newShip = StudentShip(column.toInt(), row.toInt(), column.toInt(), row.toInt()+3)
-            _shipList.add(newShip)
+            isVertical = false
+            val newPlayerShip = StudentShip(column.toInt(), row.toInt(), column.toInt(), row.toInt() + shipSizes[counter] -1)
+
+            //checks ships dont overlap eachother and are within the grid size
+            if (!playerShipList.any { it.overlaps(newPlayerShip)} && newPlayerShip.right < rowCount) {
+                counter += 1
+                _playerShipList.add(newPlayerShip)
+            }
+
             Log.d(LOGTAG, " DT row=$row , column=$column")
             return true
         }
-
 
     }      // End of myGestureListener class
 
 
     companion object {         // declare a constant (must be in the companion)
         const val LOGTAG = "DetectColumnsandRows"
+        val _playerShipList = mutableListOf<StudentShip>()
+        val playerShipList : List<StudentShip> get() = _playerShipList
+
     }
 
 

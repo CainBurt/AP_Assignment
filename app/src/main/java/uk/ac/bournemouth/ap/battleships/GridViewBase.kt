@@ -48,6 +48,11 @@ abstract class GridViewBase : View {
     private val gridHeight get() = rowCount * cellWidth
     private val gridWidth get() = colCount * cellWidth
 
+    val gridTop get() = (paddingTop + offsetTop)
+    val gridLeft get() = (paddingLeft + offsetLeft)
+    val gridBottom get() = (paddingTop + offsetTop + gridHeight)
+    val gridRight get() = (paddingLeft + offsetLeft + gridWidth)
+
     //adjusts for screen size
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         val availableWidth = w - paddingLeft - paddingRight - gridLinePaint.strokeWidth
@@ -59,10 +64,6 @@ abstract class GridViewBase : View {
     }
 
     protected fun drawGrid(canvas: Canvas) {
-        val gridTop = (paddingTop + offsetTop)
-        val gridLeft = (paddingLeft + offsetLeft)
-        val gridBottom = (paddingTop + offsetTop + gridHeight)
-        val gridRight = (paddingLeft + offsetLeft + gridWidth)
 
 
         //draw the game board

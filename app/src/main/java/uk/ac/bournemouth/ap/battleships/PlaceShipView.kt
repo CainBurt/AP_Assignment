@@ -43,12 +43,6 @@ class PlaceShipView : GridViewBase {
     }
 
     private fun init(attrs: AttributeSet?, defStyle: Int) {
-//        for(shipSize in shipSizes){
-//            var newShip : StudentShip
-//            do{
-//                if(colCount < shipSize)
-//            }while(shipList.any{it.overlaps(newShip)})
-//        }
 
     }
 
@@ -133,6 +127,8 @@ class PlaceShipView : GridViewBase {
             return true
         }
 
+
+
     }      // End of myGestureListener class
 
 
@@ -142,6 +138,9 @@ class PlaceShipView : GridViewBase {
         val playerShipList : List<StudentShip> get() = _playerShipList
 
     }
+
+    
+
 
 
 }

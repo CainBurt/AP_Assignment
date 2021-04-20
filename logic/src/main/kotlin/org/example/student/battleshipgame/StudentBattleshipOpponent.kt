@@ -1,5 +1,6 @@
 package org.example.student.battleshipgame
 
+import uk.ac.bournemouth.ap.battleshiplib.BattleshipGrid
 import uk.ac.bournemouth.ap.battleshiplib.BattleshipOpponent
 import uk.ac.bournemouth.ap.battleshiplib.BattleshipOpponent.ShipInfo
 import java.lang.IllegalArgumentException
@@ -18,7 +19,7 @@ open class StudentBattleshipOpponent(//T_ODO("Determine the rows for the grid in
 
     override val ships:List<StudentShip> //T_ODO("Record the ships that are placed for this opponent")
 
-    constructor(rows: Int, columns: Int, shipSizes: IntArray, random: Random) : this(rows, columns, randomGame(rows, columns, shipSizes, random))
+    constructor(rows: Int = 10, columns: Int = 10, shipSizes: IntArray = BattleshipGrid.DEFAULT_SHIP_SIZES, random: Random = Random) : this(rows, columns, randomGame(rows, columns, shipSizes, random))
 
     init{
         //checks ships are valid and do not overlap

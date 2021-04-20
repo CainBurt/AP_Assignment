@@ -27,7 +27,7 @@ open class StudentBattleshipGrid protected constructor(
     /**
      * Helper constructor for a fresh new game
      */
-    constructor(opponent: StudentBattleshipOpponent) : this(
+    constructor(opponent: StudentBattleshipOpponent = StudentBattleshipOpponent()) : this(
             MutableMatrix(
                     opponent.columns,
                     opponent.rows

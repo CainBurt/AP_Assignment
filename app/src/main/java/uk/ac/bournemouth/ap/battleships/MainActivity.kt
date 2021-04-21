@@ -6,7 +6,7 @@ import android.os.Bundle
 import android.view.View
 import android.widget.Button
 import android.widget.EditText
-import uk.ac.bournemouth.ap.battleships.PlaceShipView.Companion.playerShipList
+//import uk.ac.bournemouth.ap.battleships.PlaceShipView.Companion.playerShipList
 
 class MainActivity : AppCompatActivity() {
 

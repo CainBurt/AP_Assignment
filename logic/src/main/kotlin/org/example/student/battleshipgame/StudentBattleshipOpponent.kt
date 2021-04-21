@@ -13,13 +13,13 @@ import kotlin.random.Random
  * T_ODO Create a constructor that creates a game given dimensions and a list of placed ships
  * T_ODO Create a way to generate a random game
  */
-open class StudentBattleshipOpponent(//T_ODO("Determine the rows for the grid in which the ships are hidden")
-        override val rows: Int, //T_ODO("Determine the columns for the grid in which the ships are hidden")
-        override val columns: Int, ships:List<StudentShip>) : BattleshipOpponent { //rows: Int, columns: Int, shipSize: IntArray, random: Random
+open class StudentBattleshipOpponent(
+        final override val columns: Int,
+        final override val rows: Int, ships: List<StudentShip>) : BattleshipOpponent {
 
-    override val ships:List<StudentShip> //T_ODO("Record the ships that are placed for this opponent")
+    final override val ships:List<StudentShip>
 
-    constructor(rows: Int = 10, columns: Int = 10, shipSizes: IntArray = BattleshipGrid.DEFAULT_SHIP_SIZES, random: Random = Random) : this(rows, columns, randomGame(rows, columns, shipSizes, random))
+    constructor(columns: Int = 10, rows: Int = 10, shipSizes: IntArray = BattleshipGrid.DEFAULT_SHIP_SIZES, random: Random = Random) : this(columns, rows, randomGame(columns, rows, shipSizes, random))
 
     init{
         //checks ships are valid and do not overlap
@@ -56,7 +56,7 @@ open class StudentBattleshipOpponent(//T_ODO("Determine the rows for the grid in
 
         /**for each ship size in the list generate a random x and y and orientation,
          * put it on the board and make sure it fits and doesnt over lap. Create a ship object and add it to the list.**/
-        fun randomGame(rows: Int, columns: Int, shipSizes: IntArray, random: Random): List<StudentShip>{
+        fun randomGame(columns: Int, rows: Int, shipSizes: IntArray, random: Random): List<StudentShip>{
             val shipList = mutableListOf<StudentShip>()
 
             for (shipSize in shipSizes){
@@ -65,14 +65,14 @@ open class StudentBattleshipOpponent(//T_ODO("Determine the rows for the grid in
 
                 do {
 
-                    if(columns < shipSize || (rows >= shipSize && random.nextBoolean())){ //vertical
+                    newShip = if(columns < shipSize || (rows >= shipSize && random.nextBoolean())){ //vertical
                         val shipRow = random.nextInt(rows-shipSize+1)
                         val shipColumn = random.nextInt(columns)
-                        newShip = StudentShip(shipRow, shipColumn, shipRow + shipSize-1, shipColumn)
+                        StudentShip(shipRow, shipColumn, shipRow + shipSize-1, shipColumn)
                     }else{ //horizontal
                         val shipRow = random.nextInt(rows)
                         val shipColumn = random.nextInt(columns-shipSize+1)
-                        newShip = StudentShip(shipRow, shipColumn, shipRow, shipColumn + shipSize-1)
+                        StudentShip(shipRow, shipColumn, shipRow, shipColumn + shipSize-1)
                     }
 
 

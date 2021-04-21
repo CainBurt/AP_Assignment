@@ -92,7 +92,7 @@ open class StudentBattleshipGrid protected constructor(
      * @param column The column changed
      * @param row    The row changed
      */
-    protected fun fireOnGridChangeEvent(column: Int, row: Int) {
+    private fun fireOnGridChangeEvent(column: Int, row: Int) {
         for (listener in onGridChangeListeners) {
             listener.onGridChanged(this, column, row)
         }
@@ -119,6 +119,7 @@ open class StudentBattleshipGrid protected constructor(
         }
 
         //Update the grid state, remembering that if a ship is sunk, all its cells should be sunk")
+        @Suppress("MoveVariableDeclarationIntoWhen")
         val shipInfo = opponent.shipAt(column, row)
         val guessResult = when (shipInfo) {
 
@@ -131,15 +132,15 @@ open class StudentBattleshipGrid protected constructor(
                 guesses[column, row] = GuessCell.HIT(shipInfo.index)
 
                 var isSunk = true
-                shipInfo.ship.forEachIndex{column, row ->
-                    if(guesses[column, row] !is GuessCell.HIT){
+                shipInfo.ship.forEachIndex{x, y ->
+                    if(guesses[x, y] !is GuessCell.HIT){
                         isSunk = false
                     }
                 }
 
                 if(isSunk){
-                    shipInfo.ship.forEachIndex{column, row ->
-                        guesses[column, row] = GuessCell.SUNK(shipInfo.index)
+                    shipInfo.ship.forEachIndex{x, y ->
+                        guesses[x, y] = GuessCell.SUNK(shipInfo.index)
                     }
                     shipsSunk[shipInfo.index] = true
                     GuessResult.SUNK(shipInfo.index)

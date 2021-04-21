@@ -4,7 +4,7 @@ import uk.ac.bournemouth.ap.battleshiplib.Ship
 import java.lang.IllegalArgumentException
 
 /** A simple implementation of ship. You could change this if you want to, or add functionality.*/
-open class StudentShip(override val top: Int, override val left: Int, override val bottom: Int, override val right: Int ): Ship {
+class StudentShip(override val top: Int, override val left: Int, override val bottom: Int, override val right: Int ): Ship {
     init {
         //Make sure to check that the arguments are valid: left<=right, top<=bottom and the * ship is only 1 wide
         if(right<left || bottom<top || (bottom != top && right != left) || left < 0 || top < 0){

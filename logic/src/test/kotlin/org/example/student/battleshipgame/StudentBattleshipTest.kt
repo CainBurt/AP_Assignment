@@ -14,7 +14,7 @@ class StudentBattleshipTest : BattleshipTest() {
     ): StudentBattleshipOpponent {
         val studentShips = ships.map { ship -> StudentShip(top = ship.top, left = ship.left, bottom = ship.bottom, right = ship.right )
         }
-        return StudentBattleshipOpponent(rows, columns, studentShips)
+        return StudentBattleshipOpponent(columns, rows, studentShips)
     }
 
     override fun createOpponent(
@@ -24,7 +24,7 @@ class StudentBattleshipTest : BattleshipTest() {
         random: Random
     ): StudentBattleshipOpponent {
         // Note that the passing of random allows for repeatable testing
-        return StudentBattleshipOpponent(rows, columns, shipSizes, random)
+        return StudentBattleshipOpponent(columns, rows, shipSizes, random)
     }
 
     override fun createGrid(

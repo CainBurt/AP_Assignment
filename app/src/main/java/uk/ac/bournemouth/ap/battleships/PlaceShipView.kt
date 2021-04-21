@@ -9,8 +9,15 @@ import android.util.Log
 import android.view.GestureDetector
 import android.view.MotionEvent
 import androidx.core.view.GestureDetectorCompat
+import org.example.student.battleshipgame.StudentBattleshipGrid
+import org.example.student.battleshipgame.StudentBattleshipOpponent
+import org.example.student.battleshipgame.StudentOpponentAi
 import org.example.student.battleshipgame.StudentShip
 import uk.ac.bournemouth.ap.battleshiplib.BattleshipGrid
+import uk.ac.bournemouth.ap.battleshiplib.GuessCell
+import uk.ac.bournemouth.ap.battleshiplib.GuessResult
+import kotlin.math.floor
+import kotlin.random.Random
 
 /**
  * TODO: document your custom view class.
@@ -22,13 +29,14 @@ class PlaceShipView : GridViewBase {
 
     var row = 0f
     var column = 0f
-    var isVertical = true
+
     lateinit var newPlayerShip : StudentShip
     //gets the ship sizes
     val shipSizes: IntArray = BattleshipGrid.DEFAULT_SHIP_SIZES
     var counter = 0
 
 
+    var grid: StudentBattleshipGrid = StudentBattleshipGrid(StudentBattleshipOpponent(colCount, rowCount, playerShipList))
 
     constructor(context: Context) : super(context) {
         init(null, 0)
@@ -50,11 +58,34 @@ class PlaceShipView : GridViewBase {
         requestLayout()
     }
 
+    private val hitPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        style = Paint.Style.FILL
+        color = Color.RED
+    }
+    private val sunkPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        style = Paint.Style.FILL
+        color = Color.BLUE
+    }
+    private val missPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        style = Paint.Style.FILL
+        color = Color.LTGRAY
+    }
+
 
     override fun onDraw(canvas: Canvas) {
         drawGrid(canvas)
         drawShips(canvas)
 
+        if(computerTurn < GridView.turn){
+
+            computerTurn++
+
+            val cell = StudentOpponentAi().shootAtPlayer(grid)
+
+            Log.d(LOGTAG, "COMPUTERS SHOT $cell")
+
+
+        }
     }
 
     private val shipPaint = Paint().apply {
@@ -94,15 +125,15 @@ class PlaceShipView : GridViewBase {
         override fun onSingleTapConfirmed(ev: MotionEvent): Boolean {
 
             //check ships dont overlap
-            row = ev.x / 100
-            column = ev.y / 100
-            isVertical = true
-            newPlayerShip = StudentShip(column.toInt(), row.toInt(), column.toInt()+ shipSizes[counter] -1, row.toInt())
+            val column = floor((ev.x - gridLeft) / cellWidth).toInt()
+            val row = floor((ev.y - gridTop) / cellWidth).toInt()
 
-            //checks ships dont overlap eachother and are within the grid size
-            if(!playerShipList.any{it.overlaps(newPlayerShip)} && newPlayerShip.bottom < colCount){
-                counter += 1
-                _playerShipList.add(newPlayerShip)
+            if(counter < shipSizes.size){
+                newPlayerShip = StudentShip(row, column, row+ shipSizes[counter] -1, column)
+                if(!playerShipList.any{it.overlaps(newPlayerShip)} && newPlayerShip.bottom < colCount){
+                    counter += 1
+                    _playerShipList.add(newPlayerShip)
+                }
             }
 
             Log.d(LOGTAG, "ST row=$row , column=$column")
@@ -112,15 +143,17 @@ class PlaceShipView : GridViewBase {
         override fun onDoubleTap(ev: MotionEvent): Boolean {
 
 
-            row = ev.x / 100
-            column = ev.y / 100
-            isVertical = false
-            val newPlayerShip = StudentShip(column.toInt(), row.toInt(), column.toInt(), row.toInt() + shipSizes[counter] -1)
+            val column = floor((ev.x - gridLeft) / cellWidth).toInt()
+            val row = floor((ev.y - gridTop) / cellWidth).toInt()
 
-            //checks ships dont overlap eachother and are within the grid size
-            if (!playerShipList.any { it.overlaps(newPlayerShip)} && newPlayerShip.right < rowCount) {
-                counter += 1
-                _playerShipList.add(newPlayerShip)
+
+
+            if(counter < shipSizes.size){
+                newPlayerShip = StudentShip(row, column, row, column + shipSizes[counter] -1)
+                if(!playerShipList.any{it.overlaps(newPlayerShip)} && newPlayerShip.bottom < colCount){
+                    counter += 1
+                    _playerShipList.add(newPlayerShip)
+                }
             }
 
             Log.d(LOGTAG, " DT row=$row , column=$column")
@@ -136,6 +169,8 @@ class PlaceShipView : GridViewBase {
         const val LOGTAG = "DetectColumnsandRows"
         val _playerShipList = mutableListOf<StudentShip>()
         val playerShipList : List<StudentShip> get() = _playerShipList
+
+        var computerTurn = 0
 
     }
 

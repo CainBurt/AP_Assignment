@@ -1,6 +1,5 @@
 package uk.ac.bournemouth.ap.battleships
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Color
@@ -10,19 +9,11 @@ import android.util.Log
 import android.view.GestureDetector
 import android.view.MotionEvent
 import androidx.core.view.GestureDetectorCompat
-import org.example.student.battleshipgame.StudentBattleshipGrid
-import org.example.student.battleshipgame.StudentBattleshipOpponent
-import org.example.student.battleshipgame.StudentOpponentAi
 import org.example.student.battleshipgame.StudentShip
 import uk.ac.bournemouth.ap.battleshiplib.BattleshipGrid
-import uk.ac.bournemouth.ap.battleshiplib.GuessCell
-import uk.ac.bournemouth.ap.battleshiplib.GuessResult
 import kotlin.math.floor
-import kotlin.random.Random
 
-/**
- * TODO: document your custom view class.
- */
+
 class PlaceShipView : GridViewBase {
     constructor(context: Context) : super(context) {
         init(null, 0)
@@ -53,7 +44,6 @@ class PlaceShipView : GridViewBase {
     val shipSizes: IntArray = BattleshipGrid.DEFAULT_SHIP_SIZES
     var counter = 0
 
-    var grid: StudentBattleshipGrid = StudentBattleshipGrid(StudentBattleshipOpponent(colCount, rowCount, playerShipList))
 
     private val hitPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         style = Paint.Style.FILL
@@ -72,7 +62,6 @@ class PlaceShipView : GridViewBase {
     override fun onDraw(canvas: Canvas) {
         drawGrid(canvas)
         drawShips(canvas)
-        drawCell(canvas)
     }
 
     private val shipPaint = Paint().apply {
@@ -95,32 +84,6 @@ class PlaceShipView : GridViewBase {
         invalidate()
     }
 
-    private fun drawCell(canvas: Canvas){
-        if(computerTurn < GridView.turn){
-
-            val shot = StudentOpponentAi().shootAtPlayer(grid)
-            for(column in 0 until colCount){
-                for(row in 0 until rowCount){
-                    val cell = grid[column, row]
-                    val canvasX = column * cellWidth + gridLeft
-                    val canvasY = row * cellWidth + gridTop
-                    when(cell){
-                        is GuessCell.HIT -> {
-                            canvas.drawCircle(canvasX+0.5f*cellWidth, canvasY+0.5f*cellWidth, 0.4f*cellWidth ,hitPaint)
-                        }
-                        GuessCell.MISS -> {
-                            canvas.drawCircle(canvasX+0.5f*cellWidth, canvasY+0.5f*cellWidth, 0.4f*cellWidth ,missPaint)
-                        }
-                        is GuessCell.SUNK -> {
-                            canvas.drawCircle(canvasX+0.5f*cellWidth, canvasY+0.5f*cellWidth, 0.4f*cellWidth ,sunkPaint)
-                        }
-                        GuessCell.UNSET -> {}
-                    }
-                }
-            }
-            computerTurn++
-        }
-    }
 
     private val myGestureDetector = GestureDetectorCompat(context, MyGestureListener())
 
@@ -173,18 +136,13 @@ class PlaceShipView : GridViewBase {
             return true
         }
 
-
-
-    }      // End of myGestureListener class
+    }// End of myGestureListener class
 
 
     companion object {         // declare a constant (must be in the companion)
         const val LOGTAG = "PlaceShipView"
         val _playerShipList = mutableListOf<StudentShip>()
         val playerShipList : List<StudentShip> get() = _playerShipList
-
-        var computerTurn = 0
-
     }
 
     

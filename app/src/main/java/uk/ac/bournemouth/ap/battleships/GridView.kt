@@ -113,13 +113,12 @@ class GridView : GridViewBase {
 
             //checks if that coordinate has already been guessed
             if(grid[column, row] != GuessCell.UNSET){
-                Log.d(LOGTAG, "COORDINATE ALREADY GUESSED")
+                Log.d(LOGTAG, "PLAYER COORDINATE ALREADY GUESSED")
             }else{
                 grid.shootAt(column, row)
                 turn++
             }
-
-            Log.d(LOGTAG, " row=$row , column=$column")
+            //Log.d(LOGTAG, " row=$row , column=$column")
             return true
         }
 

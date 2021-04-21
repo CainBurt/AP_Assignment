@@ -1,5 +1,6 @@
 package uk.ac.bournemouth.ap.battleships
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Color
@@ -23,21 +24,6 @@ import kotlin.random.Random
  * TODO: document your custom view class.
  */
 class PlaceShipView : GridViewBase {
-
-    override val colCount: Int get() = BattleshipGrid.DEFAULT_COLUMNS
-    override val rowCount: Int get() = BattleshipGrid.DEFAULT_ROWS
-
-    var row = 0f
-    var column = 0f
-
-    lateinit var newPlayerShip : StudentShip
-    //gets the ship sizes
-    val shipSizes: IntArray = BattleshipGrid.DEFAULT_SHIP_SIZES
-    var counter = 0
-
-
-    var grid: StudentBattleshipGrid = StudentBattleshipGrid(StudentBattleshipOpponent(colCount, rowCount, playerShipList))
-
     constructor(context: Context) : super(context) {
         init(null, 0)
     }
@@ -58,6 +44,17 @@ class PlaceShipView : GridViewBase {
         requestLayout()
     }
 
+    override val colCount: Int get() = BattleshipGrid.DEFAULT_COLUMNS
+    override val rowCount: Int get() = BattleshipGrid.DEFAULT_ROWS
+
+
+    lateinit var newPlayerShip : StudentShip
+    //gets the ship sizes
+    val shipSizes: IntArray = BattleshipGrid.DEFAULT_SHIP_SIZES
+    var counter = 0
+
+    var grid: StudentBattleshipGrid = StudentBattleshipGrid(StudentBattleshipOpponent(colCount, rowCount, playerShipList))
+
     private val hitPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         style = Paint.Style.FILL
         color = Color.RED
@@ -75,17 +72,7 @@ class PlaceShipView : GridViewBase {
     override fun onDraw(canvas: Canvas) {
         drawGrid(canvas)
         drawShips(canvas)
-
-        if(computerTurn < GridView.turn){
-
-            computerTurn++
-
-            val cell = StudentOpponentAi().shootAtPlayer(grid)
-
-            Log.d(LOGTAG, "COMPUTERS SHOT $cell")
-
-
-        }
+        drawCell(canvas)
     }
 
     private val shipPaint = Paint().apply {
@@ -98,7 +85,7 @@ class PlaceShipView : GridViewBase {
         val gridTop = offsetTop+paddingTop
         val shipMargins = cellWidth*0.1f
 
-        for(ship in playerShipList){
+        for (ship in playerShipList){
             val shipLeft = ship.left *cellWidth + gridLeft + shipMargins
             val shipTop = ship.top * cellWidth + gridTop + shipMargins
             val shipRight = (ship.right+1) * cellWidth + gridLeft - shipMargins
@@ -108,6 +95,32 @@ class PlaceShipView : GridViewBase {
         invalidate()
     }
 
+    private fun drawCell(canvas: Canvas){
+        if(computerTurn < GridView.turn){
+
+            val shot = StudentOpponentAi().shootAtPlayer(grid)
+            for(column in 0 until colCount){
+                for(row in 0 until rowCount){
+                    val cell = grid[column, row]
+                    val canvasX = column * cellWidth + gridLeft
+                    val canvasY = row * cellWidth + gridTop
+                    when(cell){
+                        is GuessCell.HIT -> {
+                            canvas.drawCircle(canvasX+0.5f*cellWidth, canvasY+0.5f*cellWidth, 0.4f*cellWidth ,hitPaint)
+                        }
+                        GuessCell.MISS -> {
+                            canvas.drawCircle(canvasX+0.5f*cellWidth, canvasY+0.5f*cellWidth, 0.4f*cellWidth ,missPaint)
+                        }
+                        is GuessCell.SUNK -> {
+                            canvas.drawCircle(canvasX+0.5f*cellWidth, canvasY+0.5f*cellWidth, 0.4f*cellWidth ,sunkPaint)
+                        }
+                        GuessCell.UNSET -> {}
+                    }
+                }
+            }
+            computerTurn++
+        }
+    }
 
     private val myGestureDetector = GestureDetectorCompat(context, MyGestureListener())
 
@@ -166,7 +179,7 @@ class PlaceShipView : GridViewBase {
 
 
     companion object {         // declare a constant (must be in the companion)
-        const val LOGTAG = "DetectColumnsandRows"
+        const val LOGTAG = "PlaceShipView"
         val _playerShipList = mutableListOf<StudentShip>()
         val playerShipList : List<StudentShip> get() = _playerShipList
 

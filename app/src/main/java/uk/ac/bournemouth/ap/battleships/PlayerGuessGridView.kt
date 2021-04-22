@@ -1,35 +1,34 @@
 package uk.ac.bournemouth.ap.battleships
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.util.AttributeSet
-import android.util.Log
 import android.view.GestureDetector
 import android.view.MotionEvent
 import androidx.core.view.GestureDetectorCompat
 import org.example.student.battleshipgame.*
 import uk.ac.bournemouth.ap.battleshiplib.BattleshipGrid
 import uk.ac.bournemouth.ap.battleshiplib.GuessCell
-import java.lang.IllegalStateException
 import kotlin.math.floor
 
-class GridView : GridViewBase {
+class PlayerGuessGridView : GridViewBase {
 
     constructor(context: Context) : super(context) {
-        init(null, 0)
+        init()
     }
 
     constructor(context: Context, attrs: AttributeSet) : super(context, attrs) {
-        init(attrs, 0)
+        init()
     }
 
     constructor(context: Context, attrs: AttributeSet, defStyle: Int) : super(context, attrs, defStyle) {
-        init(attrs, defStyle)
+        init()
     }
 
-    private fun init(attrs: AttributeSet?, defStyle: Int) {
+    private fun init() {
 
     }
 
@@ -37,19 +36,19 @@ class GridView : GridViewBase {
     override val rowCount: Int get() = grid.rows
 
 
-    private val gridListener = BattleshipGrid.BattleshipGridListener { grid, column, row ->
+    private val gridListener = BattleshipGrid.BattleshipGridListener { _, _, _ ->
         invalidate()
     }
     var grid: StudentBattleshipGrid = StudentBattleshipGrid()
-    set(value) {
-        field.removeOnGridChangeListener(gridListener)
-        field = value
-        value.addOnGridChangeListener(gridListener)
-        onSizeChanged(width,height,width,height)
-        invalidate()
-    }
+        set(value) {
+            field.removeOnGridChangeListener(gridListener)
+            field = value
+            value.addOnGridChangeListener(gridListener)
+            onSizeChanged(width, height, width, height)
+            invalidate()
+        }
 
-    init{
+    init {
 
         grid.addOnGridChangeListener(gridListener)
 
@@ -70,63 +69,66 @@ class GridView : GridViewBase {
 
     override fun onDraw(canvas: Canvas) {
         drawGrid(canvas)
+        drawCell(canvas)
+    }
 
-        for(column in 0 until colCount){
-            for(row in 0 until rowCount){
+    /** Draws a red circle for hit, blue for sunk and grey for miss on the board when the player takes a shot*/
+    private fun drawCell(canvas: Canvas){
+        for (column in 0 until colCount) {
+            for (row in 0 until rowCount) {
                 val cell = grid[column, row]
                 val canvasX = column * cellWidth + gridLeft
                 val canvasY = row * cellWidth + gridTop
-                when(cell){
+                when (cell) {
                     is GuessCell.HIT -> {
-                        canvas.drawCircle(canvasX+0.5f*cellWidth, canvasY+0.5f*cellWidth, 0.4f*cellWidth ,hitPaint)
+                        canvas.drawCircle(canvasX + 0.5f * cellWidth, canvasY + 0.5f * cellWidth, 0.4f * cellWidth, hitPaint)
                     }
                     GuessCell.MISS -> {
-                        canvas.drawCircle(canvasX+0.5f*cellWidth, canvasY+0.5f*cellWidth, 0.4f*cellWidth ,missPaint)
+                        canvas.drawCircle(canvasX + 0.5f * cellWidth, canvasY + 0.5f * cellWidth, 0.4f * cellWidth, missPaint)
                     }
                     is GuessCell.SUNK -> {
-                        canvas.drawCircle(canvasX+0.5f*cellWidth, canvasY+0.5f*cellWidth, 0.4f*cellWidth ,sunkPaint)
+                        canvas.drawCircle(canvasX + 0.5f * cellWidth, canvasY + 0.5f * cellWidth, 0.4f * cellWidth, sunkPaint)
                     }
-                    GuessCell.UNSET -> {}
+                    GuessCell.UNSET -> {
+                    }
+                    else -> {
+                    }
                 }
             }
         }
-
     }
 
     private val myGestureDetector = GestureDetectorCompat(context, MyGestureListener())
 
+    @SuppressLint("ClickableViewAccessibility")
     override fun onTouchEvent(event: MotionEvent): Boolean {
         return myGestureDetector.onTouchEvent(event) || super.onTouchEvent(event)
     }
 
-    private inner class MyGestureListener: GestureDetector.SimpleOnGestureListener() {
+    private inner class MyGestureListener : GestureDetector.SimpleOnGestureListener() {
 
         override fun onDown(ev: MotionEvent): Boolean {
             return true
         }
 
-
+        /** When the player clicks on the grid it will call the shootAt function on the opponents grid if the shot is valid*/
         override fun onSingleTapUp(ev: MotionEvent): Boolean {
 
             val column = floor((ev.x - gridLeft) / cellWidth).toInt()
             val row = floor((ev.y - gridTop) / cellWidth).toInt()
 
             //checks if that coordinate has already been guessed
-            if(grid[column, row] != GuessCell.UNSET){
-                Log.d(LOGTAG, "PLAYER COORDINATE ALREADY GUESSED")
-            }else{
+            if (grid[column, row] == GuessCell.UNSET) {
                 grid.shootAt(column, row)
-                turn++
+                playerTurn++
             }
-            //Log.d(LOGTAG, " row=$row , column=$column")
             return true
         }
 
     }// End of myGestureListener class
 
-    companion object{
-        const val LOGTAG = "GridView"
-        var turn = 0
+    companion object {
+        var playerTurn = 0
     }
 
 }

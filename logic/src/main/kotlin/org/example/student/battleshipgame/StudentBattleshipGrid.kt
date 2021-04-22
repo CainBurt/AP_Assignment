@@ -105,20 +105,20 @@ open class StudentBattleshipGrid protected constructor(
     override operator fun get(column: Int, row: Int): GuessCell = guesses[column, row]
 
     /**
-     * This method is core to the game as it implements the actual gameplay (after initial setup).
+     * This method is core to the game as it implements the actual game play (after initial setup).
      */
     override fun shootAt(column: Int, row: Int): GuessResult {
-        //Check that the coordinates are in range
-        if(column < 0 || column >= columns ||
-                row < 0 || row >= rows){
+        //Checks that the coordinates are in range
+        if (column < 0 || column >= columns ||
+                row < 0 || row >= rows) {
             throw IllegalArgumentException("coordinates are not in range")
         }
-        //Check that the coordinate has not been tried already for this game
-        if(guesses[column, row] != GuessCell.UNSET){
+        //Checks that the coordinate has not been tried already for this game
+        if (guesses[column, row] != GuessCell.UNSET) {
             throw IllegalStateException("coordinate already guessed")
         }
 
-        //Update the grid state, remembering that if a ship is sunk, all its cells should be sunk")
+        //Updates the grid state, remembering that if a ship is sunk, all its cells should be sunk"
         @Suppress("MoveVariableDeclarationIntoWhen")
         val shipInfo = opponent.shipAt(column, row)
         val guessResult = when (shipInfo) {
@@ -132,19 +132,19 @@ open class StudentBattleshipGrid protected constructor(
                 guesses[column, row] = GuessCell.HIT(shipInfo.index)
 
                 var isSunk = true
-                shipInfo.ship.forEachIndex{x, y ->
-                    if(guesses[x, y] !is GuessCell.HIT){
+                shipInfo.ship.forEachIndex { x, y ->
+                    if (guesses[x, y] !is GuessCell.HIT) {
                         isSunk = false
                     }
                 }
 
-                if(isSunk){
-                    shipInfo.ship.forEachIndex{x, y ->
+                if (isSunk) {
+                    shipInfo.ship.forEachIndex { x, y ->
                         guesses[x, y] = GuessCell.SUNK(shipInfo.index)
                     }
                     shipsSunk[shipInfo.index] = true
                     GuessResult.SUNK(shipInfo.index)
-                }else{
+                } else {
                     GuessResult.HIT(shipInfo.index)
                 }
 
@@ -152,7 +152,7 @@ open class StudentBattleshipGrid protected constructor(
             }
         }
         fireOnGridChangeEvent(column, row)
-        //Return the result of the action as a child of GuessResult
+
         return guessResult
     }
 

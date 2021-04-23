@@ -10,4 +10,4 @@ LOGIC
 UI
 -View to place ships.
 -View to play the game against the AI using the logic.
--Visible opponent extention.
+-Visible opponent extension.

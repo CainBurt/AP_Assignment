@@ -1,13 +1,11 @@
-# 2021_battleships-CainBurt
-2021_battleships-CainBurt created by GitHub Classroom
+# Application Programing - Battleships Game
+Player can play a basic AI that guesses at a ships position randomly.
 
-Cain Burt - s5210146 - https://github.com/BUAProg2020/2021_battleships-CainBurt
+## Game Logic
+- All tests pass.
+- AI component implemented.
 
-LOGIC
--All tests pass.
--AI component implemented.
-
-UI
--View to place ships.
--View to play the game against the AI using the logic.
--Visible opponent extension.
+## Game UI
+- View to place ships.
+- View to play the game against the AI using the logic.
+- Visible opponent extension.
